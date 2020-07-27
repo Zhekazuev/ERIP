@@ -12,8 +12,8 @@ Output data: free address - Netbox json-string)
 """
 
 
-import requests
 import netbox
+import sys
 
 
 def get_free_ip():
@@ -25,12 +25,25 @@ def get_free_ip_by_prefix(prefix):
 
 
 def main():
-    input_data = {"region": "minsk", "type": "mobile", "prefix": ""}
+    try:
+        input_data = sys.argv[1]
+    except IndexError:
+        return {"status": "error", "message": "Missing parameters"}
+
+    input_data = {"region": "minsk",
+                  "type": "mobile",
+                  "prefix": ""}
+    if input_data.get("region") is None:
+        return {"status": "error", "message": "Region required"}
+    if input_data.get("type") is None:
+        return {"status": "error", "message": "Prefix type required"}
+
     if input_data.get("prefix"):
         free_ip = get_free_ip_by_prefix(input_data.get("prefix"))
-    free_ip = get_free_ip()
-    return free_ip
+    else:
+        free_ip = get_free_ip()
+    return {"status": "good", "message": free_ip}
 
 
 if __name__ == '__main__':
-    address = main()
+    print(main())
