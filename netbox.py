@@ -37,13 +37,13 @@ class Read:
             tenant_group_url = f"{self.nb_url}/api/tenancy/tenant-groups/?name={name}&limit=0"
             tenant_groups_list = requests.get(tenant_group_url, headers=self.headers)
             tenant_groups_list = json.loads(tenant_groups_list.text)
-            return tenant_groups_list['results'][0]
+            return tenant_groups_list
 
         def get_by_slug(self, slug):
             tenant_group_url = f"{self.nb_url}/api/tenancy/tenant-groups/?slug={slug}&limit=0"
             tenant_groups_list = requests.get(tenant_group_url, headers=self.headers)
             tenant_groups_list = json.loads(tenant_groups_list.text)
-            return tenant_groups_list['results'][0]
+            return tenant_groups_list
 
     class Tenants(Initiation):
         def get_all(self):
@@ -53,40 +53,40 @@ class Read:
             return tenants_list
 
         def get_by_id(self, id):
-            tenants_url = f"{self.nb_url}/api/tenancy/tenants/{id}/"
-            tenants = requests.get(tenants_url, headers=self.headers)
-            tenants = json.loads(tenants.text)
-            return tenants
+            tenant_url = f"{self.nb_url}/api/tenancy/tenants/{id}/"
+            tenant = requests.get(tenant_url, headers=self.headers)
+            tenant = json.loads(tenant.text)
+            return tenant
 
         def get_by_name(self, name):
             tenants_url = f"{self.nb_url}/api/tenancy/tenants/?name={name}&limit=0"
-            tenants = requests.get(tenants_url, headers=self.headers)
-            tenants = json.loads(tenants.text)
-            return tenants
+            tenants_list = requests.get(tenants_url, headers=self.headers)
+            tenants_list = json.loads(tenants_list.text)
+            return tenants_list
 
         def get_by_slug(self, slug):
             tenants_url = f"{self.nb_url}/api/tenancy/tenants/?slug={slug}&limit=0"
-            tenants = requests.get(tenants_url, headers=self.headers)
-            tenants = json.loads(tenants.text)
-            return tenants['results'][0]
+            tenants_list = requests.get(tenants_url, headers=self.headers)
+            tenants_list = json.loads(tenants_list.text)
+            return tenants_list
 
         def get_by_group_id(self, group_id):
             tenants_url = f"{self.nb_url}/api/tenancy/tenants/?group_id={group_id}&limit=0"
-            tenants = requests.get(tenants_url, headers=self.headers)
-            tenants = json.loads(tenants.text)
-            return tenants
+            tenants_list = requests.get(tenants_url, headers=self.headers)
+            tenants_list = json.loads(tenants_list.text)
+            return tenants_list
 
         def get_by_group_name(self, group_name):
             tenants_url = f"{self.nb_url}/api/tenancy/tenants/?group={group_name}&limit=0"
-            tenants = requests.get(tenants_url, headers=self.headers)
-            tenants = json.loads(tenants.text)
-            return tenants
+            tenants_list = requests.get(tenants_url, headers=self.headers)
+            tenants_list = json.loads(tenants_list.text)
+            return tenants_list
 
         def get_by_tag(self, tag):
             tenants_url = f"{self.nb_url}/api/tenancy/tenants/?tag={tag}&limit=0"
-            tenants = requests.get(tenants_url, headers=self.headers)
-            tenants = json.loads(tenants.text)
-            return tenants
+            tenants_list = requests.get(tenants_url, headers=self.headers)
+            tenants_list = json.loads(tenants_list.text)
+            return tenants_list
 
     class VRFS(Initiation):
         def get_all(self):
@@ -96,40 +96,46 @@ class Read:
             return vrfs_list
 
         def get_by_id(self, id):
-            vrfs_url = f"{self.nb_url}/api/ipam/vrfs/{id}/"
-            vrfs = requests.get(vrfs_url, headers=self.headers)
-            vrfs = json.loads(vrfs.text)
-            return vrfs
+            vrf_url = f"{self.nb_url}/api/ipam/vrfs/{id}/"
+            vrf = requests.get(vrf_url, headers=self.headers)
+            vrf = json.loads(vrf.text)
+            return vrf
 
         def get_by_name(self, name):
             vrfs_url = f"{self.nb_url}/api/ipam/vrfs/?name={name}&limit=0"
             vrfs_list = requests.get(vrfs_url, headers=self.headers)
             vrfs_list = json.loads(vrfs_list.text)
-            return vrfs_list['results']
+            return vrfs_list
 
         def get_by_rd_from_nb(self, rd):
             vrfs_url = f"{self.nb_url}/api/ipam/vrfs/?rd={rd}&limit=0"
             vrfs_list = requests.get(vrfs_url, headers=self.headers)
             vrfs_list = json.loads(vrfs_list.text)
-            return vrfs_list['results'][0]
+            return vrfs_list
 
         def get_by_tenant_group_slug(self, tenant_group):
             vrfs_url = f"{self.nb_url}/api/ipam/vrfs/?tenant_group={tenant_group}&limit=0"
-            vrfs = requests.get(vrfs_url, headers=self.headers)
-            vrfs = json.loads(vrfs.text)
-            return vrfs
+            vrfs_list = requests.get(vrfs_url, headers=self.headers)
+            vrfs_list = json.loads(vrfs_list.text)
+            return vrfs_list
 
         def get_by_tenant_id(self, tenant_id):
             vrfs_url = f"{self.nb_url}/api/ipam/vrfs/?tenant_id={tenant_id}&limit=0"
             vrfs_list = requests.get(vrfs_url, headers=self.headers)
             vrfs_list = json.loads(vrfs_list.text)
-            return vrfs_list['results'][0]
+            return vrfs_list
 
         def get_by_tenant_slug(self, tenant_slug):
             vrfs_url = f"{self.nb_url}/api/ipam/vrfs/?tenant={tenant_slug}&limit=0"
-            vrfs = requests.get(vrfs_url, headers=self.headers)
-            vrfs = json.loads(vrfs.text)
-            return vrfs['results'][0]
+            vrfs_list = requests.get(vrfs_url, headers=self.headers)
+            vrfs_list = json.loads(vrfs_list.text)
+            return vrfs_list
+
+        def get_by_tag(self, tag):
+            vrfs_url = f"{self.nb_url}.api/ipam/vrfs/?tag={tag}&limit=0"
+            vrfs_list = requests.get(vrfs_url, headers=self.headers)
+            vrfs_list = json.loads(vrfs_list.text)
+            return vrfs_list
 
     class Prefixes(Initiation):
         def get_all(self):
@@ -139,10 +145,10 @@ class Read:
             return prefixes_list
 
         def get_by_id(self, id):
-            prefixes_url = f"{self.nb_url}/api/ipam/prefixes/{id}/"
-            prefixes_list = requests.get(prefixes_url, headers=self.headers)
-            prefixes_list = json.loads(prefixes_list.text)
-            return prefixes_list
+            prefix_url = f"{self.nb_url}/api/ipam/prefixes/{id}/"
+            prefix = requests.get(prefix_url, headers=self.headers)
+            prefix = json.loads(prefix.text)
+            return prefix
 
         def get_by_name(self, q):
             prefixes_url = f"{self.nb_url}/api/ipam/prefixes/?q={q}"
@@ -280,6 +286,12 @@ class Read:
 
         def get_by_vrf_id_and_address(self, vrf_id, address):
             ips_url = f"{self.nb_url}/api/ipam/ip-addresses/?vrf_id={vrf_id}&address={address}&limit=0"
+            ips_list = requests.get(ips_url, headers=self.headers)
+            ips_list = json.loads(ips_list.text)
+            return ips_list
+
+        def get_by_tag(self, tag):
+            ips_url = f"{self.nb_url}/api/ipam/ip-addresses/?tag={tag}&limit=0"
             ips_list = requests.get(ips_url, headers=self.headers)
             ips_list = json.loads(ips_list.text)
             return ips_list
