@@ -46,11 +46,11 @@ def reserve_ip_by_id(id):
 
 
 def main():
-    # try:
-    #     input_string = sys.argv[1]
-    #     input_data = json.loads(input_string)
-    # except IndexError:
-    #     return {"status": "error", "message": "Missing parameters"}
+    try:
+        input_string = sys.argv[1]
+        input_data = json.loads(input_string)
+    except IndexError:
+        return {"status": "error", "message": "Missing parameters"}
 
     regions = ("brest", "gomel", "grodno", "minsk", "mogilev", "vitebsk")
     types = ("mobile", "fttx")
