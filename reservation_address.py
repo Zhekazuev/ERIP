@@ -46,18 +46,19 @@ def reserve_ip_by_id(id):
 
 
 def main():
+    input_data = {"region": "minsk",
+                  "type": "mobile",
+                  "prefix": ""}
     try:
         input_string = sys.argv[1]
         input_data = json.loads(input_string)
+        if not isinstance(input_data, dict):
+            return {"status": "error", "message": "Parameters are not JSON-string. Please put JSON!"}
     except IndexError:
         return {"status": "error", "message": "Missing parameters"}
 
     regions = ("brest", "gomel", "grodno", "minsk", "mogilev", "vitebsk")
     types = ("mobile", "fttx")
-
-    input_data = {"region": "minsk",
-                  "type": "mobile",
-                  "prefix": ""}
 
     # check region
     if input_data.get("region") not in regions:

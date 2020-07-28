@@ -20,19 +20,20 @@ import re
 
 
 def main():
+    input_data = {"address": "172.1.1.21",
+                  "prefix": "172.1.1.0/28",
+                  "region": "minsk",
+                  "type": ""}
     try:
         input_string = sys.argv[1]
         input_data = json.loads(input_string)
+        if not isinstance(input_data, dict):
+            return {"status": "error", "message": "Parameters are not JSON-string. Please put JSON!"}
     except IndexError:
         return {"status": "error", "message": "Missing parameters"}
 
     regions = ("brest", "gomel", "grodno", "minsk", "mogilev", "vitebsk")
     types = ("mobile", "fttx")
-
-    input_data = {"address": "172.1.1.21",
-                  "prefix": "172.1.1.0/28",
-                  "region": "minsk",
-                  "type": ""}
 
     # check ip-address
     check_address = re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", input_data.get("address"))
@@ -57,5 +58,4 @@ def main():
 
 
 if __name__ == '__main__':
-    output_data = main()
-    print(output_data)
+    print(main())
