@@ -14,13 +14,15 @@ Output data: vacated address (with comparison: {"old": "", "new": ""})
 
 
 import netbox
+import json
 import sys
 import re
 
 
 def main():
     try:
-        input_data = sys.argv[1]
+        input_string = sys.argv[1]
+        input_data = json.loads(input_string)
     except IndexError:
         return {"status": "error", "message": "Missing parameters"}
 
