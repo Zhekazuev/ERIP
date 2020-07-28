@@ -17,19 +17,38 @@ import sys
 import re
 
 
-def get_free_ip():
-    return {}
+def get_free_ip(region, prefix_type):
+    prefixes = netbox.Read().Prefixes().get_by_two_tags_v4(region, prefix_type)
+    # prefix2 = netbox.Read().Prefixes().get_by_three_tags_v4("erip", region, prefix_type)
+    # print(prefix2)
+    if prefixes.get("count") is None:
+        return {"status": "error", "message": f"Don't exist prefixes with this parameters: {region}, {prefix_type}"}
+    else:
+        for prefix in prefixes.get("results"):
+            prefix_id = prefix.get("id")
+            addresses = netbox.Read().Addresses().get_free_ips_by_prefix_id(prefix_id)
+            if addresses:
+                return {"status": "good", "message": addresses[0]}
+            else:
+                continue
+        else:
+            return {"status": "error",
+                    "message": f"Don't exist free IPs in prefixes with this parameters: {region}, {prefix_type}"}
 
 
 def get_free_ip_by_prefix(prefix):
     return {}
 
 
+def reserve_ip_by_id(id):
+    return {}
+
+
 def main():
-    try:
-        input_data = sys.argv[1]
-    except IndexError:
-        return {"status": "error", "message": "Missing parameters"}
+    # try:
+    #     input_data = sys.argv[1]
+    # except IndexError:
+    #     return {"status": "error", "message": "Missing parameters"}
 
     regions = ("brest", "gomel", "grodno", "minsk", "mogilev", "vitebsk")
     types = ("mobile", "fttx")
@@ -53,9 +72,12 @@ def main():
             return {"status": "error", "message": "The entered prefix is invalid"}
         free_ip = get_free_ip_by_prefix(input_data.get("prefix"))
     else:
-        free_ip = get_free_ip()
+        region = input_data.get("region")
+        prefix_type = input_data.get("type")
+        free_ip = get_free_ip(region, prefix_type)
 
-    return {"status": "good", "message": free_ip}
+    #reserve_ip_by_id(free_ip.get("results").get("id"))
+    return free_ip
 
 
 if __name__ == '__main__':
