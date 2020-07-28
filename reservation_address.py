@@ -65,12 +65,12 @@ def main():
         return {"status": "error", "message": "Region required or the entered region is invalid"}
 
     # check type
-    if input_data.get("type") and input_data.get("type") not in types:
+    if input_data.get("type") not in types:
         return {"status": "error", "message": "Prefix type required or the entered type is invalid"}
 
     if input_data.get("prefix"):
         # check prefix
-        check_prefix = re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}", input_data.get("prefix"))
+        check_prefix = re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}", str(input_data.get("prefix")))
         if not check_prefix:
             return {"status": "error", "message": "The entered prefix is invalid"}
         free_ip = get_free_ip_by_prefix(input_data.get("prefix"))
