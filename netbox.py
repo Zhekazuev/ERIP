@@ -13,8 +13,8 @@ class Initiation:
         """
         Init parameters for connect to Netbox
         """
-        self.api_token = Netbox.TOKEN_TEST
-        self.nb_url = Netbox.URL_TEST
+        self.api_token = Netbox.TOKEN_MAIN
+        self.nb_url = Netbox.URL_MAIN
         self.headers = {'Authorization': f'Token {self.api_token}', 'Content-Type': 'application/json',
                         'Accept': 'application/json'}
 
@@ -180,8 +180,38 @@ class Read:
             prefixes_list = json.loads(prefixes_list.text)
             return prefixes_list
 
-        def get_by_tag(self, tag):
-            prefixes_url = f"{self.nb_url}/api/ipam/prefixes/?tag={tag}&limit=0"
+        def get_by_tag_v4(self, tag):
+            prefixes_url = f"{self.nb_url}/api/ipam/prefixes/?family=4&tag={tag}&limit=0"
+            prefixes_list = requests.get(prefixes_url, headers=self.headers)
+            prefixes_list = json.loads(prefixes_list.text)
+            return prefixes_list
+
+        def get_by_tag_v6(self, tag):
+            prefixes_url = f"{self.nb_url}/api/ipam/prefixes/?family=6&tag={tag}&limit=0"
+            prefixes_list = requests.get(prefixes_url, headers=self.headers)
+            prefixes_list = json.loads(prefixes_list.text)
+            return prefixes_list
+
+        def get_by_two_tags_v4(self, tag1, tag2):
+            prefixes_url = f"{self.nb_url}/api/ipam/prefixes/?family=4&tag={tag1}&tag={tag2}&limit=0"
+            prefixes_list = requests.get(prefixes_url, headers=self.headers)
+            prefixes_list = json.loads(prefixes_list.text)
+            return prefixes_list
+
+        def get_by_two_tags_v6(self,  tag1, tag2):
+            prefixes_url = f"{self.nb_url}/api/ipam/prefixes/?family=6&tag={tag1}&tag={tag2}&limit=0"
+            prefixes_list = requests.get(prefixes_url, headers=self.headers)
+            prefixes_list = json.loads(prefixes_list.text)
+            return prefixes_list
+
+        def get_by_three_tags_v4(self, tag1, tag2, tag3):
+            prefixes_url = f"{self.nb_url}/api/ipam/prefixes/?family=4&tag={tag1}&tag={tag2}&tag={tag3}&limit=0"
+            prefixes_list = requests.get(prefixes_url, headers=self.headers)
+            prefixes_list = json.loads(prefixes_list.text)
+            return prefixes_list
+
+        def get_by_three_tags_v6(self,  tag1, tag2, tag3):
+            prefixes_url = f"{self.nb_url}/api/ipam/prefixes/?family=6&tag={tag1}&tag={tag2}&tag={tag3}&limit=0"
             prefixes_list = requests.get(prefixes_url, headers=self.headers)
             prefixes_list = json.loads(prefixes_list.text)
             return prefixes_list
