@@ -5,7 +5,7 @@ Methods need to work with Netbox
 """
 import requests
 import json
-import auth
+from config import Netbox
 
 
 class Initiation:
@@ -13,8 +13,8 @@ class Initiation:
         """
         Init parameters for connect to Netbox
         """
-        self.api_token = auth.netbox_token_test
-        self.nb_url = auth.netbox_token_test
+        self.api_token = Netbox.TOKEN_TEST
+        self.nb_url = Netbox.URL_TEST
         self.headers = {'Authorization': f'Token {self.api_token}', 'Content-Type': 'application/json',
                         'Accept': 'application/json'}
 
