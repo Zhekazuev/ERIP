@@ -19,6 +19,12 @@ import re
 
 
 def get_free_ip(region, prefix_type):
+    """Input data: Region, Type)
+    Two types Prefixes: mobile and fttx
+        {"region": "minsk",
+        "type": "mobile",
+        "prefix": ""}
+    """
     prefixes = netbox.Read().Prefixes().get_by_two_tags_v4(region, prefix_type)
     # prefixes = netbox.Read().Prefixes().get_by_three_tags_v4("erip", region, prefix_type)
     if prefixes.get("count") is None:
@@ -37,6 +43,12 @@ def get_free_ip(region, prefix_type):
 
 
 def get_free_ip_by_prefix(region, prefix_type, inprefix):
+    """Input data: mandatory(Region, Type, prefix - if client wants specific prefix)
+    Two types Prefixes: mobile and fttx
+        {"region": "minsk",
+        "type": "mobile",
+        "prefix": "46.216.144.0/21"}
+    """
     prefixes = netbox.Read().Prefixes().get_by_two_tags_v4(region, prefix_type)
     # prefixes = netbox.Read().Prefixes().get_by_three_tags_v4("erip", region, prefix_type)
     if prefixes.get("count") is None:
@@ -54,6 +66,7 @@ def get_free_ip_by_prefix(region, prefix_type, inprefix):
 
 
 def reserve_ip(ip, region, prefix_type):
+    """Reservation IP in netbox by input parameters"""
     address = ip.get("message")
     vrf = netbox.Read().VRFS().get_by_id(address.get("vrf").get("id"))
     tenant = vrf.get("tenant")
@@ -72,21 +85,20 @@ def reserve_ip(ip, region, prefix_type):
 
 
 def main():
-    input_data = {"region": "minsk",
-                  "type": "mobile",
-                  "prefix": "46.216.144.0/21"}
-    # try:
-    #     input_string = sys.argv[1]
-    #     input_data = json.loads(input_string)
-    #     if not isinstance(input_data, dict):
-    #         return {"status": "error", "message": "Parameters are not JSON-string. Please put JSON!"}
-    # except IndexError:
-    #     return {"status": "error", "message": "Missing parameters"}
+    """Main logic with filters and checks"""
+    try:
+        input_string = sys.argv[1]
+        input_data = json.loads(input_string)
+        if not isinstance(input_data, dict):
+            return {"status": "error", "message": "Parameters are not JSON-string. Please put JSON!"}
+    except IndexError:
+        return {"status": "error", "message": "Missing parameters"}
 
     regions = ("brest", "gomel", "grodno", "minsk", "mogilev", "vitebsk")
     types = ("mobile", "fttx")
     region = input_data.get("region")
     prefix_type = input_data.get("type")
+
     # check region
     if input_data.get("region") not in regions:
         return {"status": "error", "message": "Region required or the entered region is invalid"}
