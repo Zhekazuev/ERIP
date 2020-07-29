@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Method for removing an address in the ERIP Prefixes.
 All Prefixes are Private.
 Two types Prefixes: mobile and fttx
