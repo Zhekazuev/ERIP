@@ -397,14 +397,15 @@ class Create:
             return new_avlprefixes.json()
 
     class Addresses(Initiation):
-        def create(self, **ips):
+        def create(self, address, vrf_id=None, tenant_id=None, description="", custom_fields={}, tags=None):
             ips_url = f"{self.nb_url}/api/ipam/ip-addresses/"
-            ips_params = {"address": ips['address'],
-                          "vrf": ips['vrf_id'],
-                          'tenant': ips['tenant_id'],
+            ips_params = {"address": address,
+                          "vrf": vrf_id,
+                          'tenant': tenant_id,
                           "status": 1,
-                          "description": ips['description'],
-                          "custom_fields": ips['custom_fields']}
+                          "description": description,
+                          "tags": tags,
+                          "custom_fields": custom_fields}
             new_ips = requests.post(ips_url, headers=self.headers, json=ips_params)
             return new_ips.json()
 
