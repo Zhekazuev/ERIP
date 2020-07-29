@@ -20,8 +20,7 @@ import re
 
 def get_free_ip(region, prefix_type):
     prefixes = netbox.Read().Prefixes().get_by_two_tags_v4(region, prefix_type)
-    # prefix2 = netbox.Read().Prefixes().get_by_three_tags_v4("erip", region, prefix_type)
-    # print(prefix2)
+    # prefixes = netbox.Read().Prefixes().get_by_three_tags_v4("erip", region, prefix_type)
     if prefixes.get("count") is None:
         return {"status": "error", "message": f"Don't exist prefixes with parameters: {region}, {prefix_type}"}
     else:
@@ -37,27 +36,45 @@ def get_free_ip(region, prefix_type):
                     "message": f"Don't exist free IPs in all prefixes with parameters: {region}, {prefix_type}"}
 
 
-def get_free_ip_by_prefix(region, prefix_type, prefix):
-    return {"status": "error", "message": ""}
+def get_free_ip_by_prefix(region, prefix_type, inprefix):
+    prefixes = netbox.Read().Prefixes().get_by_two_tags_v4(region, prefix_type)
+    # prefixes = netbox.Read().Prefixes().get_by_three_tags_v4("erip", region, prefix_type)
+    if prefixes.get("count") is None:
+        return {"status": "error", "message": f"Don't exist prefixes with parameters: {region}, {prefix_type}"}
+    else:
+        for prefix in prefixes.get("results"):
+            if prefix.get("prefix") == inprefix:
+                prefix_id = prefix.get("id")
+                addresses = netbox.Read().Addresses().get_free_ips_by_prefix_id(prefix_id)
+                if addresses:
+                    return {"status": "good", "message": addresses[0]}
+                else:
+                    return {"status": "error",
+                            "message": f"Don't exist free IPs in all prefixes with parameters: {region}, {prefix_type}"}
 
 
-def reserve_ip(ip):
+def reserve_ip(ip, region, prefix_type):
     address = ip.get("message")
     vrf = netbox.Read().VRFS().get_by_id(address.get("vrf").get("id"))
-    tenant_id = vrf.get("results").get("tenant").get("id")
+    tenant = vrf.get("tenant")
+    if tenant:
+        tenant_id = vrf.get("tenant").get("id")
+    else:
+        tenant_id = None
     new_address = netbox.Create().Addresses().create(address=address.get("address"),
-                                                     vrf=address.get("vrf").get("id"),
-                                                     tenant=tenant_id,
-                                                     status=1,
+                                                     vrf_id=address.get("vrf").get("id"),
+                                                     tenant_id=tenant_id,
                                                      description="",
-                                                     custom_fields="")
+                                                     tags=["erip", region, prefix_type,
+                                                           "staros"],
+                                                     custom_fields={})
     return new_address
 
 
 def main():
     input_data = {"region": "minsk",
                   "type": "mobile",
-                  "prefix": ""}
+                  "prefix": "46.216.144.0/21"}
     # try:
     #     input_string = sys.argv[1]
     #     input_data = json.loads(input_string)
@@ -90,7 +107,7 @@ def main():
     if free_ip.get("status") is "error":
         return free_ip
     else:
-        return reserve_ip(free_ip)
+        return reserve_ip(free_ip, region, prefix_type)
 
 
 if __name__ == '__main__':
