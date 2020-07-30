@@ -37,7 +37,7 @@ def get_free_ip(region, prefix_type, in_vrf):
 
     if prefixes.get("count") is None:
         return {"status": "error",
-                "message": f"Don't exist prefixes with parameters: {vrf_rd}, {region}, {prefix_type}"}
+                "message": f"Don't exist prefixes with parameters: {vrf_rd}, {region}, {prefix_type} and tag=erip"}
     else:
         for prefix in prefixes.get("results"):
             prefix_id = prefix.get("id")
