@@ -40,12 +40,12 @@ def main():
     types = ("mobile", "fttx")
 
     # check ip-address
-    check_address = re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", str(input_data.get("address")))
+    check_address = re.findall(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", str(input_data.get("address")))
     if not check_address:
         return {"status": "error", "message": "IP-Address required or the entered IP-Address is invalid"}
 
     # check prefix
-    check_prefix = re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}", str(input_data.get("prefix")))
+    check_prefix = re.findall(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$", str(input_data.get("prefix")))
     if not check_prefix:
         return {"status": "error", "message": "The entered prefix is invalid"}
 
