@@ -110,7 +110,7 @@ def main():
 
     if input_data.get("prefix"):
         # check prefix
-        check_prefix = re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}", str(input_data.get("prefix")))
+        check_prefix = re.findall(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$", str(input_data.get("prefix")))
         if not check_prefix:
             return {"status": "error", "message": "The entered prefix is invalid"}
         free_ip = get_free_ip_by_prefix(region, prefix_type, input_data.get("prefix"))
