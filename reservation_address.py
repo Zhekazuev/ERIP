@@ -98,8 +98,6 @@ def main():
 
     regions = ("brest", "gomel", "grodno", "minsk", "mogilev", "vitebsk")
     types = ("mobile", "fttx")
-    region = input_data.get("region")
-    prefix_type = input_data.get("type")
 
     # check region
     if input_data.get("region") not in regions:
@@ -108,6 +106,9 @@ def main():
     # check type
     if input_data.get("type") not in types:
         return {"status": "error", "message": "Prefix type required or the entered type is invalid"}
+
+    region = input_data.get("region")
+    prefix_type = input_data.get("type")
 
     if input_data.get("prefix"):
         # check prefix
