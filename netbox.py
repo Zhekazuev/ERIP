@@ -107,7 +107,7 @@ class Read:
             vrfs_list = json.loads(vrfs_list.text)
             return vrfs_list
 
-        def get_by_rd_from_nb(self, rd):
+        def get_by_rd(self, rd):
             vrfs_url = f"{self.nb_url}/api/ipam/vrfs/?rd={rd}&limit=0"
             vrfs_list = requests.get(vrfs_url, headers=self.headers)
             vrfs_list = json.loads(vrfs_list.text)
@@ -186,6 +186,12 @@ class Read:
             prefixes_list = json.loads(prefixes_list.text)
             return prefixes_list
 
+        def get_by_vrf_id_and_tag_v4(self, vrf_id, tag):
+            prefixes_url = f"{self.nb_url}/api/ipam/prefixes/?family=4&vrf_id={vrf_id}&tag={tag}&limit=0"
+            prefixes_list = requests.get(prefixes_url, headers=self.headers)
+            prefixes_list = json.loads(prefixes_list.text)
+            return prefixes_list
+
         def get_by_tag_v6(self, tag):
             prefixes_url = f"{self.nb_url}/api/ipam/prefixes/?family=6&tag={tag}&limit=0"
             prefixes_list = requests.get(prefixes_url, headers=self.headers)
@@ -206,6 +212,13 @@ class Read:
 
         def get_by_three_tags_v4(self, tag1, tag2, tag3):
             prefixes_url = f"{self.nb_url}/api/ipam/prefixes/?family=4&tag={tag1}&tag={tag2}&tag={tag3}&limit=0"
+            prefixes_list = requests.get(prefixes_url, headers=self.headers)
+            prefixes_list = json.loads(prefixes_list.text)
+            return prefixes_list
+
+        def get_by_vrf_id_and_three_tag_v4(self, vrf_id, tag1, tag2, tag3):
+            prefixes_url = f"{self.nb_url}/api/ipam/prefixes/" \
+                           f"?family=4&vrf_id={vrf_id}&tag={tag1}&tag={tag2}&tag={tag3}&limit=0"
             prefixes_list = requests.get(prefixes_url, headers=self.headers)
             prefixes_list = json.loads(prefixes_list.text)
             return prefixes_list
