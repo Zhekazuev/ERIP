@@ -49,7 +49,7 @@ def get_free_ip(region, prefix_type, in_vrf):
                 continue
         else:
             return {"status": "error",
-                    "message": f"Don't exist free IPs with parameters: {vrf_id}, {region}, {prefix_type}"}
+                    "message": f"Don't exist free IPs with parameters: {vrf_id}, {region}, {prefix_type}, tag=erip"}
 
 
 def get_gateway():

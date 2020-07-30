@@ -43,7 +43,7 @@ def delete_address(address, in_vrf):
         except IndexError as index_error:
             return {"status": "error", "message": index_error}
         netbox.Delete().Addresses().delete_by_id(address_id)
-        return {"status": "good", "message": f"Address {address} in VRF {vrf.get('name')} deleted"}
+        return {"status": "good", "message": f"Address {address} in VRF {in_vrf.get('name')} deleted"}
 
 
 def main():
