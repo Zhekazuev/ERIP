@@ -89,11 +89,12 @@ def main():
     """Main logic with filters and checks"""
     try:
         input_string = sys.argv[1]
-        input_data = json.loads(input_string)
-        if not isinstance(input_data, dict):
-            return {"status": "error", "message": "Parameters are not JSON-string. Please put JSON!"}
     except IndexError:
         return {"status": "error", "message": "Missing parameters"}
+    try:
+        input_data = json.loads(input_string)
+    except json.decoder.JSONDecodeError as json_error:
+        return {"status": "error", "message": str(json_error)}
 
     regions = ("brest", "gomel", "grodno", "minsk", "mogilev", "vitebsk")
     types = ("mobile", "fttx")
