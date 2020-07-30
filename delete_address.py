@@ -20,11 +20,18 @@ import sys
 import re
 
 
+def delete_address(address, prefix, region):
+    """Delete ip address from Netbox"""
+    address_params = netbox.Read().Addresses().get_by_address_and_two_tags(address, "erip", region)
+    print(address_params)
+    if address_params:
+        return {"status": "good", "message": f"Address {address} deleted"}
+    else:
+        return {"status": "error", "message": f"Address don't {address} deleted"}
+
+
 def main():
-    input_data = {"address": "172.1.1.21",
-                  "prefix": "172.1.1.0/28",
-                  "region": "minsk",
-                  "type": ""}
+    """Main logic with filters and checks"""
     try:
         input_string = sys.argv[1]
     except IndexError:
@@ -33,8 +40,6 @@ def main():
         input_data = json.loads(input_string)
     except json.decoder.JSONDecodeError as json_error:
         return {"status": "error", "message": str(json_error)}
-    if not isinstance(input_data, dict):
-        return {"status": "error", "message": "Parameters are not JSON-string. Please put JSON!"}
 
     regions = ("brest", "gomel", "grodno", "minsk", "mogilev", "vitebsk")
     types = ("mobile", "fttx")
@@ -57,8 +62,12 @@ def main():
     if input_data.get("type") not in types:
         return {"status": "error", "message": "Prefix type required or the entered type is invalid"}
 
-    message = ""
-    return {"status": "good", "message": message}
+    address = input_data.get("address")
+    prefix = input_data.get("prefix")
+    region = input_data.get("region")
+    message = delete_address(address, prefix, region)
+
+    return message
 
 
 if __name__ == '__main__':

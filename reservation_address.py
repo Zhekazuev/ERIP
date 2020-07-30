@@ -26,8 +26,7 @@ def get_free_ip(region, prefix_type):
         "type": "mobile",
         "prefix": ""}
     """
-    prefixes = netbox.Read().Prefixes().get_by_two_tags_v4(region, prefix_type)
-    # prefixes = netbox.Read().Prefixes().get_by_three_tags_v4("erip", region, prefix_type)
+    prefixes = netbox.Read().Prefixes().get_by_three_tags_v4("erip", region, prefix_type)
     if prefixes.get("count") is None:
         return {"status": "error", "message": f"Don't exist prefixes with parameters: {region}, {prefix_type}"}
     else:
@@ -115,14 +114,14 @@ def main():
         check_prefix = re.findall(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$", str(input_data.get("prefix")))
         if not check_prefix:
             return {"status": "error", "message": "The entered prefix is invalid"}
-        free_ip = get_free_ip_by_prefix(region, prefix_type, input_data.get("prefix"))
+        message = get_free_ip_by_prefix(region, prefix_type, input_data.get("prefix"))
     else:
-        free_ip = get_free_ip(region, prefix_type)
+        message = get_free_ip(region, prefix_type)
 
-    if free_ip.get("status") is "error":
-        return free_ip
+    if message.get("status") is "error":
+        return message
     else:
-        return reserve_ip(free_ip, region, prefix_type)
+        return reserve_ip(message, region, prefix_type)
 
 
 if __name__ == '__main__':
