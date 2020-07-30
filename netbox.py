@@ -320,6 +320,25 @@ class Read:
             ips_list = json.loads(ips_list.text)
             return ips_list
 
+        def get_by_prefix_and_address(self, prefix, address):
+            ip_url = f"{self.nb_url}/api/ipam/ip-addresses/?parent={prefix}&address={address}&limit=0"
+            ip = requests.get(ip_url, headers=self.headers)
+            ip = json.loads(ip.text)
+            return ip
+
+        def get_by_address_and_tag(self, address, tag):
+            ip_url = f"{self.nb_url}/api/ipam/ip-addresses/?address={address}&tag={tag}&limit=0"
+            ip = requests.get(ip_url, headers=self.headers)
+            ip = json.loads(ip.text)
+            return ip
+
+        def get_by_address_and_two_tags(self, address, tag1, tag2):
+            ip_url = f"{self.nb_url}/api/ipam/ip-addresses/" \
+                     f"?address={address}&tag={tag1}&tag={tag2}&limit=0"
+            ip = requests.get(ip_url, headers=self.headers)
+            ip = json.loads(ip.text)
+            return ip
+
         def get_by_tag(self, tag):
             ips_url = f"{self.nb_url}/api/ipam/ip-addresses/?tag={tag}&limit=0"
             ips_list = requests.get(ips_url, headers=self.headers)
