@@ -86,8 +86,9 @@ def reserve_ip(ip, region, prefix_type):
     ip.get("message").update({'address': new_address})
 
     # # add gateway
-    # gateway = get_gateway()
-    # ip.get("message").update({'gateway': gateway})
+    # if prefix_type is "fttx":
+    #     gateway = get_gateway()
+    #     ip.get("message").update({'gateway': gateway})
 
     return ip
 
