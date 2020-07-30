@@ -32,7 +32,7 @@ def main():
     try:
         input_data = json.loads(input_string)
     except json.decoder.JSONDecodeError as json_error:
-        return {"status": "error", "message": json_error}
+        return {"status": "error", "message": str(json_error)}
     if not isinstance(input_data, dict):
         return {"status": "error", "message": "Parameters are not JSON-string. Please put JSON!"}
 
