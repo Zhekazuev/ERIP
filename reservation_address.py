@@ -20,12 +20,6 @@ import re
 
 
 def get_free_ip(region, prefix_type):
-    """Input data: Region, Type)
-    Two types Prefixes: mobile and fttx
-        {"region": "minsk",
-        "type": "mobile",
-        "prefix": ""}
-    """
     prefixes = netbox.Read().Prefixes().get_by_three_tags_v4("erip", region, prefix_type)
     if prefixes.get("count") is None:
         return {"status": "error", "message": f"Don't exist prefixes with parameters: {region}, {prefix_type}"}
@@ -43,14 +37,7 @@ def get_free_ip(region, prefix_type):
 
 
 def get_free_ip_by_prefix(region, prefix_type, inprefix):
-    """Input data: mandatory(Region, Type, prefix - if client wants specific prefix)
-    Two types Prefixes: mobile and fttx
-        {"region": "minsk",
-        "type": "mobile",
-        "prefix": "46.216.144.0/21"}
-    """
-    prefixes = netbox.Read().Prefixes().get_by_two_tags_v4(region, prefix_type)
-    # prefixes = netbox.Read().Prefixes().get_by_three_tags_v4("erip", region, prefix_type)
+    prefixes = netbox.Read().Prefixes().get_by_three_tags_v4("erip", region, prefix_type)
     if prefixes.get("count") is None:
         return {"status": "error", "message": f"Don't exist prefixes with parameters: {region}, {prefix_type}"}
     else:
@@ -85,7 +72,13 @@ def reserve_ip(ip, region, prefix_type):
 
 
 def main():
-    """Main logic with filters and checks"""
+    """
+    Input data: mandatory(Region, Type, prefix - if client wants specific prefix)
+    Two types Prefixes: mobile and fttx
+        {"region": "minsk",
+        "type": "mobile",
+        "prefix": ""}
+    """
     try:
         input_string = sys.argv[1]
     except IndexError:
