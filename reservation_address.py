@@ -37,7 +37,7 @@ def get_free_ip(region, prefix_type, in_vrf):
 
     if prefixes.get("count") is None:
         return {"status": "error",
-                "message": f"Don't exist prefixes with parameters: {vrf_rd}, {region}, {prefix_type} and tag=erip"}
+                "message": f"No prefixes with such parameters: {vrf_rd}, {region}, {prefix_type}, erip"}
     else:
         for prefix in prefixes.get("results"):
             prefix_id = prefix.get("id")
@@ -49,18 +49,48 @@ def get_free_ip(region, prefix_type, in_vrf):
                 continue
         else:
             return {"status": "error",
-                    "message": f"Don't exist free IPs with parameters: {vrf_id}, {region}, {prefix_type}, tag=erip"}
+                    "message": f"No IPs with such parameters: {vrf_id}, {region}, {prefix_type}, tag=erip"}
 
 
-def get_gateway():
-    return {}
+def get_free_ip_global_vrf(region, prefix_type):
+    prefixes = netbox.Read().Prefixes().get_by_three_tags_v4("erip", region, prefix_type)
+
+    if prefixes.get("count") is None:
+        return {"status": "error",
+                "message": f"No prefixes with such parameters: Global, {region}, {prefix_type}, erip"}
+    else:
+        for prefix in prefixes.get("results"):
+            prefix_id = prefix.get("id")
+            addresses = netbox.Read().Addresses().get_free_ips_by_prefix_id(prefix_id)
+            if addresses:
+                return {"status": "good",
+                        "message": {"address": addresses[0], "prefix": prefix}}
+            else:
+                continue
+        else:
+            return {"status": "error",
+                    "message": f"No IPs with such parameters: Global, {region}, {prefix_type}, tag=erip"}
+
+
+def get_gateway(prefix):
+    addresses = netbox.Read().Addresses().get_by_prefix(prefix.get("prefix"))
+    if addresses.get("count") is None:
+        return None
+    else:
+        for address in addresses.get('results'):
+            if "gateway" in address.get("tags"):
+                return address
+            else:
+                continue
+        else:
+            return None
 
 
 def reserve_ip(ip, region, prefix_type):
     """Reservation IP in netbox by input parameters"""
     address = ip.get("message").get("address")
-    vrf = ip.get("message").get("vrf")
-    tenant = vrf.get("tenant")
+    vrf = ip.get("message").get("address").get("vrf")
+    tenant = ip.get("message").get("prefix").get("tenant")
 
     # getting tennant id
     if tenant:
@@ -85,10 +115,49 @@ def reserve_ip(ip, region, prefix_type):
     # add new ip information in ip(json string with information with address, prefix, vrf)
     ip.get("message").update({'address': new_address})
 
-    # # add gateway
-    # if prefix_type is "fttx":
-    #     gateway = get_gateway()
-    #     ip.get("message").update({'gateway': gateway})
+    # add gateway
+    if prefix_type is "fttx":
+        prefix = ip.get("message").get("prefix")
+        gateway = get_gateway(prefix)
+        ip.get("message").update({'gateway': gateway})
+
+    return ip
+
+
+def reserve_ip_global_vrf(ip, region, prefix_type):
+    """Reservation IP in netbox by input parameters"""
+    address = ip.get("message").get("address")
+    vrf = ip.get("message").get("address").get("vrf")
+    tenant = ip.get("message").get("prefix").get("tenant")
+
+    # getting tennant id
+    if tenant:
+        tenant_id = vrf.get("tenant").get("id")
+    else:
+        tenant_id = None
+
+    # the decision to add a tag - staros
+    if prefix_type is "mobile":
+        tags = ["erip", region, prefix_type, "staros"]
+    else:
+        tags = ["erip", region, prefix_type]
+
+    # creating new address
+    new_address = netbox.Create().Addresses().create(address=address.get("address"),
+                                                     vrf_id=vrf,
+                                                     tenant_id=tenant_id,
+                                                     description="",
+                                                     tags=tags,
+                                                     custom_fields={})
+
+    # add new ip information in ip(json string with information with address, prefix, vrf)
+    ip.get("message").update({'address': new_address})
+
+    # add gateway
+    if prefix_type is "fttx":
+        prefix = ip.get("message").get("prefix")
+        gateway = get_gateway(prefix)
+        ip.get("message").update({'gateway': gateway})
 
     return ip
 
@@ -125,23 +194,29 @@ def main():
         return {"status": "error",
                 "message": f"Prefix type required or the entered type is invalid. Enter one of the options: {types}"}
 
-    # checking vrf name type
-    if not isinstance(input_data.get("vrf").get("name"), str):
-        return {"status": "error", "message": "The entered VRF Name is not str type"}
-
-    # checking rd type
-    if not isinstance(input_data.get("vrf").get("rd"), int):
-        return {"status": "error", "message": "The entered RD is not int type"}
-
     region = input_data.get("region")
     prefix_type = input_data.get("type")
-    in_vrf = input_data.get("vrf")
 
-    message = get_free_ip(region, prefix_type, in_vrf)
-    if message.get("status") is "error":
-        return message
+    if input_data.get("vrf") is None:
+        message = get_free_ip_global_vrf(region, prefix_type)
+        if message.get("status") is "error":
+            return message
+        else:
+            return reserve_ip_global_vrf(message, region, prefix_type)
     else:
-        return reserve_ip(message, region, prefix_type)
+        # checking vrf name type
+        if not isinstance(input_data.get("vrf").get("name"), str):
+            return {"status": "error", "message": "The entered VRF Name is not str type"}
+        # checking rd type
+        if not isinstance(input_data.get("vrf").get("rd"), int):
+            return {"status": "error", "message": "The entered RD is not int type"}
+
+        in_vrf = input_data.get("vrf")
+        message = get_free_ip(region, prefix_type, in_vrf)
+        if message.get("status") is "error":
+            return message
+        else:
+            return reserve_ip(message, region, prefix_type)
 
 
 if __name__ == '__main__':
