@@ -333,6 +333,12 @@ class Read:
             ips_list = json.loads(ips_list.text)
             return ips_list
 
+        def get_by_prefix(self, prefix):
+            ip_url = f"{self.nb_url}/api/ipam/ip-addresses/?parent={prefix}&limit=0"
+            ip = requests.get(ip_url, headers=self.headers)
+            ip = json.loads(ip.text)
+            return ip
+
         def get_by_prefix_and_address(self, prefix, address):
             ip_url = f"{self.nb_url}/api/ipam/ip-addresses/?parent={prefix}&address={address}&limit=0"
             ip = requests.get(ip_url, headers=self.headers)
