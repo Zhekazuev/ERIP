@@ -27,6 +27,7 @@ def delete_address(address, region, prefix_type, in_vrf):
     """Delete ip address from Netbox"""
     vrf_rd = "25106:" + str(in_vrf.get("rd"))
     vrf = netbox.Read().VRFS().get_by_rd(vrf_rd)
+
     if vrf.get("count") is None:
         return {"status": "error", "message": f"No VRF with such RD {vrf_rd}"}
     else:
@@ -42,7 +43,7 @@ def delete_address(address, region, prefix_type, in_vrf):
         try:
             address_id = address_params.get("results")[0].get("id")
         except IndexError as index_error:
-            return {"status": "error", "message": f"There are no addresses with such parameters: "
+            return {"status": "error", "message": f"There are no Addresses with such parameters: "
                                                   f"{in_vrf.get('name')}, {address}, erip, {region}, {prefix_type}"}
         netbox.Delete().Addresses().delete_by_id(address_id)
         return {"status": "good", "message": f"Address in VRF {in_vrf.get('name')} with such parameters deleted:"
@@ -59,7 +60,7 @@ def delete_address_vrf_global(address, region, prefix_type):
         try:
             address_id = address_params.get("results")[0].get("id")
         except IndexError as index_error:
-            return {"status": "error", "message": f"There are no addresses with such parameters: "
+            return {"status": "error", "message": f"There are no Addresses with such parameters: "
                                                   f"{address}, erip, {region}, {prefix_type}"}
         netbox.Delete().Addresses().delete_by_id(address_id)
         return {"status": "good", "message": f"Address in GRT with such parameters deleted:"
@@ -88,13 +89,11 @@ def main():
     if not check_address:
         return {"status": "error", "message": "You must enter an IP address or "
                                               "the entered IP address is not in a format. Correct format: 192.168.1.1"}
-
     # check region
     if input_data.get("region") not in regions:
         return {"status": "error",
                 "message": f"You are required to enter a region or the entered region is incorrect. "
                            f"Enter one of the suggested regions: {regions}"}
-
     # check type
     if input_data.get("type") not in types:
         return {"status": "error",

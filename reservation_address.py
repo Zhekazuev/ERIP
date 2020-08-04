@@ -26,18 +26,17 @@ def get_free_ip(region, prefix_type, in_vrf):
     vrf_rd = "25106:" + str(in_vrf.get("rd"))
     vrf = netbox.Read().VRFS().get_by_rd(vrf_rd)
     if vrf.get("count") is None:
-        return {"status": "error", "message": f"Don't exist VRF with RD={vrf_rd}"}
+        return {"status": "error", "message": f"No VRF with such RD {vrf_rd}"}
     else:
         try:
             vrf_id = vrf.get("results")[0].get("id")
         except IndexError as index_error:
             return {"status": "error", "message": index_error}
-
     prefixes = netbox.Read().Prefixes().get_by_vrf_id_and_three_tag_v4(vrf_id, "erip", region, prefix_type)
-
     if prefixes.get("count") is None:
         return {"status": "error",
-                "message": f"No prefixes with such parameters: {vrf_rd}, {region}, {prefix_type}, erip"}
+                "message": f"There are not Prefixes in VRF {in_vrf.get('name')} with such parameters: "
+                           f"erip, {region}, {prefix_type}"}
     else:
         for prefix in prefixes.get("results"):
             prefix_id = prefix.get("id")
@@ -49,15 +48,16 @@ def get_free_ip(region, prefix_type, in_vrf):
                 continue
         else:
             return {"status": "error",
-                    "message": f"No IPs with such parameters: {vrf_id}, {region}, {prefix_type}, tag=erip"}
+                    "message": f"There are not Addresses in VRF {in_vrf.get('name')} with such parameters: "
+                               f"erip, {region}, {prefix_type}"}
 
 
 def get_free_ip_global_vrf(region, prefix_type):
     prefixes = netbox.Read().Prefixes().get_by_three_tags_v4("erip", region, prefix_type)
-
     if prefixes.get("count") is None:
         return {"status": "error",
-                "message": f"No prefixes with such parameters: Global, {region}, {prefix_type}, erip"}
+                "message": f"There are not Prefixes in GRT with such parameters: "
+                           f"erip, {region}, {prefix_type}"}
     else:
         for prefix in prefixes.get("results"):
             prefix_id = prefix.get("id")
@@ -69,7 +69,8 @@ def get_free_ip_global_vrf(region, prefix_type):
                 continue
         else:
             return {"status": "error",
-                    "message": f"No IPs with such parameters: Global, {region}, {prefix_type}, tag=erip"}
+                    "message": f"There are not Addresses in GRT with such parameters: "
+                               f"erip, {region}, {prefix_type}"}
 
 
 def get_gateway(prefix):
@@ -173,7 +174,7 @@ def main():
     try:
         input_string = sys.argv[1]
     except IndexError:
-        return {"status": "error", "message": "Missing parameters"}
+        return {"status": "error", "message": "Parameters required"}
     # checking if the passed parameter is correct - need json string
     try:
         input_data = json.loads(input_string)
@@ -187,12 +188,14 @@ def main():
     # checking region
     if input_data.get("region") not in regions:
         return {"status": "error",
-                "message": f"Region required or the entered region is invalid. Enter one of the options: {regions}"}
+                "message": f"You are required to enter a region or the entered region is incorrect. "
+                           f"Enter one of the suggested regions: {regions}"}
 
     # checking type
     if input_data.get("type") not in types:
         return {"status": "error",
-                "message": f"Prefix type required or the entered type is invalid. Enter one of the options: {types}"}
+                "message": f"You are required to enter a type or the entered type is incorrect. "
+                           f"Enter one of the suggested types: {types}"}
 
     region = input_data.get("region")
     prefix_type = input_data.get("type")
