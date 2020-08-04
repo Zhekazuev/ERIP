@@ -72,7 +72,7 @@ def main():
     try:
         input_string = sys.argv[1]
     except IndexError:
-        return {"status": "error", "message": "Missing parameters"}
+        return {"status": "error", "message": "Parameters required"}
     # checking if the passed parameter is correct - need json string
     try:
         input_data = json.loads(input_string)
@@ -86,17 +86,20 @@ def main():
     # check ip-address
     check_address = re.findall(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", str(input_data.get("address")))
     if not check_address:
-        return {"status": "error", "message": "IP-Address required or the entered IP-Address is invalid"}
+        return {"status": "error", "message": "You must enter an IP address or "
+                                              "the entered IP address is not in a format. Correct format: 192.168.1.1"}
 
     # check region
     if input_data.get("region") not in regions:
         return {"status": "error",
-                "message": f"Region required or the entered region is invalid. Enter one of the options: {regions}"}
+                "message": f"You are required to enter a region or the entered region is incorrect. "
+                           f"Enter one of the suggested regions: {regions}"}
 
     # check type
     if input_data.get("type") not in types:
         return {"status": "error",
-                "message": f"Prefix type required or the entered type is invalid. Enter one of the options: {types}"}
+                "message": f"You are required to enter a type or the entered type is incorrect. "
+                           f"Enter one of the suggested types: {types}"}
 
     region = input_data.get("region")
     prefix_type = input_data.get("type")
