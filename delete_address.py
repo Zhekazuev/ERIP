@@ -23,41 +23,47 @@ import sys
 import re
 
 
-def delete_address(address, in_vrf):
+def delete_address(address, region, prefix_type, in_vrf):
     """Delete ip address from Netbox"""
     vrf_rd = "25106:" + str(in_vrf.get("rd"))
     vrf = netbox.Read().VRFS().get_by_rd(vrf_rd)
     if vrf.get("count") is None:
-        return {"status": "error", "message": f"Don't exist VRF with RD={vrf_rd}"}
+        return {"status": "error", "message": f"No VRF with such RD {vrf_rd}"}
     else:
         try:
             vrf_id = vrf.get("results")[0].get("id")
         except IndexError as index_error:
             return {"status": "error", "message": index_error}
     address_params = netbox.Read().Addresses().get_by_vrf_id_and_address(vrf_id, address)
-    if vrf.get("count") is None:
-        return {"status": "error", "message": f"Address {address} in VRF {vrf.get('name')} don't deleted"}
+    if address_params.get("count") is None:
+        return {"status": "error", "message": f"Address in VRF {in_vrf.get('name')} with such parameters "
+                                              f"has not been deleted: {address}, erip, {region}, {prefix_type}"}
     else:
         try:
             address_id = address_params.get("results")[0].get("id")
         except IndexError as index_error:
-            return {"status": "error", "message": index_error}
+            return {"status": "error", "message": f"There are no addresses with such parameters: "
+                                                  f"{in_vrf.get('name')}, {address}, erip, {region}, {prefix_type}"}
         netbox.Delete().Addresses().delete_by_id(address_id)
-        return {"status": "good", "message": f"Address {address} in VRF {in_vrf.get('name')} deleted"}
+        return {"status": "good", "message": f"Address in VRF {in_vrf.get('name')} with such parameters deleted:"
+                                             f"{address}, erip, {region}, {prefix_type}"}
 
 
 def delete_address_vrf_global(address, region, prefix_type):
     """Delete ip address from Netbox"""
     address_params = netbox.Read().Addresses().get_by_address_and_three_tags(address, "erip", region, prefix_type)
     if address_params.get("count") is None:
-        return {"status": "error", "message": f"Address {address} in GRT don't deleted"}
+        return {"status": "error", "message": f"Address in GRT with such parameters has not been deleted:"
+                                              f"{address}, erip, {region}, {prefix_type}"}
     else:
         try:
             address_id = address_params.get("results")[0].get("id")
         except IndexError as index_error:
-            return {"status": "error", "message": index_error}
+            return {"status": "error", "message": f"There are no addresses with such parameters: "
+                                                  f"{address}, erip, {region}, {prefix_type}"}
         netbox.Delete().Addresses().delete_by_id(address_id)
-        return {"status": "good", "message": f"Address {address} in GRT deleted"}
+        return {"status": "good", "message": f"Address in GRT with such parameters deleted:"
+                                             f"{address}, erip, {region}, {prefix_type}"}
 
 
 def main():
@@ -107,7 +113,7 @@ def main():
             return {"status": "error", "message": "The entered RD is not int type"}
         address = input_data.get("address")
         in_vrf = input_data.get("vrf")
-        message = delete_address(address, in_vrf)
+        message = delete_address(address, region, prefix_type, in_vrf)
     return message
 
 
