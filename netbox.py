@@ -3,9 +3,9 @@ RESTBOX
 RESTful API realisation for Netbox
 Methods need to work with Netbox
 """
+from config import Netbox
 import requests
 import json
-from config import Netbox
 
 
 class Initiation:
