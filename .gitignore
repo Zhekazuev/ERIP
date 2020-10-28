@@ -1,3 +1,6 @@
+venv
+.idea
+logs
 *.log
-tmp/*
-logs/
+config.py
+auth.py
