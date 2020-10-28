@@ -14,9 +14,7 @@ Input data: mandatory(IP-address, Type, Region)
 
 Output data: {'status': 'good', 'message': 'Address 10.68.0.1 in VRF None deleted'})
 """
-
-
-import logging
+from log import logger
 import netbox
 import json
 import sys
@@ -67,6 +65,7 @@ def delete_address_vrf_global(address, region, prefix_type):
                                              f"{address}, erip, {region}, {prefix_type}"}
 
 
+@logger.catch()
 def main():
     """Main logic with filters and checks"""
     # checking parameter passing

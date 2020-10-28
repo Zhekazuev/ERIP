@@ -15,8 +15,7 @@ Two types Prefixes: mobile and fttx
 
 Output data: address, prefix, vrf and gateway(opt) - JSON-string)
 """
-
-import logging
+from log import logger
 import netbox
 import json
 import sys
@@ -163,6 +162,7 @@ def reserve_ip_global_vrf(ip, region, prefix_type):
     return ip
 
 
+@logger.catch()
 def main():
     """
     Main logic
